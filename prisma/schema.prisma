@@ -1,0 +1,50 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int            @id @default(autoincrement())
+  username     String
+  email        String         @unique
+  password     String
+  AccessKey    String         @default("")
+  Device       Device[]
+  Notification Notification[]
+}
+
+model Device {
+  imei    String  @id
+  name    String
+  address String
+  user    User    @relation(fields: [userId], references: [id])
+  Input   Input[]
+  userId  Int
+}
+
+model Input {
+  id          Int      @id @default(autoincrement())
+  temperature Float
+  pression    Float
+  humidity    Float
+  mouvement   Int
+  light       Float
+  date        DateTime @default(now())
+  device      Device   @relation(fields: [deviceEmei], references: [imei])
+  deviceEmei  String
+}
+
+model Notification {
+  id      Int    @id @default(autoincrement())
+  type    String
+  content String
+  user    User   @relation(fields: [userId], references: [id])
+  userId  Int
+}
